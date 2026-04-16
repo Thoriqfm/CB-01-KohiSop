@@ -10,7 +10,13 @@ public class Minuman extends MenuItem{
 
     @Override
     public double hitungPajak() { // TODO: logic for pajak
-        return 0;
+        if (this.harga < 50) {
+            return 0; // Tidak dikenakan pajak
+        } else if (this.harga >= 50 && this.harga <= 55) {
+            return this.harga * 0.08; // Dikenakan pajak 8%
+        } else {
+            return this.harga * 0.11; // Dikenakan pajak 11%
+        }
     }
 
     @Override
@@ -20,7 +26,7 @@ public class Minuman extends MenuItem{
 
     @Override
     public String toString() { // TODO: format string for information
-        return null;
+        return String.format("%s - %s (Rp%.0f)", this.kode, this.nama, this.harga);
     }
     
 }

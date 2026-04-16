@@ -22,14 +22,14 @@ public class ItemPesanan {
     }
 
     public double getSubTotal() { // TODO: implement logic subtotal
-        return 0;
+        return menuItem.getHarga() * kuantitas;
     }
 
     public double getTotalPajak() { // TODO: implement logic pajak
-        return 0;
+        return menuItem.hitungPajak() * kuantitas;
     }
 
     public double getTotal() { // TODO: implement logic total
-        return 0;
+        return getSubTotal() + getTotalPajak();
     }
 }

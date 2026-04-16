@@ -3,49 +3,80 @@ package kohisop.model;
 import java.util.ArrayList;
 
 public class Pesanan {
+
     private ArrayList<ItemPesanan> daftarItem;
 
     public Pesanan() {
-        // TODO: implementasi constructor
+        daftarItem = new ArrayList<>();
     }
 
     public void tambahItem(ItemPesanan item) {
-        // TODO implementasi tambah item ke pesanan
+        ItemPesanan existing = getItemByKode(item.getMenuItem().getKode());
+        if (existing != null) {
+            existing.setKuantitas(existing.getKuantitas() + item.getKuantitas());
+        } else {
+            daftarItem.add(item);
+        }
     }
 
     public void hapusItem(String kode) {
-        // TODO: implementasi hapus item dari pesanan
+        daftarItem.removeIf(item -> item.getMenuItem().getKode().equals(kode));
     }
 
     public ItemPesanan getItemByKode(String kode) {
-        return null; // TODO: implement logic for get item by code
+        for (ItemPesanan item : daftarItem) {
+            if (item.getMenuItem().getKode().equals(kode)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     public ArrayList<ItemPesanan> getAllItem() {
-        return null; // TODO: implement logic for get all items in order
+        return daftarItem;
     }
 
     public ArrayList<ItemPesanan> getItemMinuman() {
-        return null; // TODO: implement logic for get all drink items in order
+        ArrayList<ItemPesanan> minuman = new ArrayList<>();
+        for (ItemPesanan item : daftarItem) {
+            if (item.getMenuItem().getKategori().equals("Minuman")) {
+                minuman.add(item);
+            }
+        }
+        return minuman;
     }
 
     public ArrayList<ItemPesanan> getItemMakanan() {
-        return null; // TODO: implement logic for get all food items in order
+        ArrayList<ItemPesanan> makanan = new ArrayList<>();
+        for (ItemPesanan item : daftarItem) {
+            if (item.getMenuItem().getKategori().equals("Makanan")) {
+                makanan.add(item);
+            }
+        }
+        return makanan;
     }
 
     public double getTotalTanpaPajak() {
-        return 0; // TODO: implement logic for get total price without tax
+        double total = 0;
+        for (ItemPesanan item : daftarItem) {
+            total += item.getSubTotal();
+        }
+        return total;
     }
 
     public double getTotalDenganPajak() {
-        return 0; // TODO: implement logic for get total price with tax
+        double total = 0;
+        for (ItemPesanan item : daftarItem) {
+            total += item.getTotal();
+        }
+        return total;
     }
 
     public boolean isEmpty() {
-        return false; // TODO: implement logic for check if order is empty
+        return daftarItem.isEmpty();
     }
 
     public void batalkan() {
-        // TODO: implementasi logika untuk membatalkan pesanan
+        daftarItem.clear();
     }
 }

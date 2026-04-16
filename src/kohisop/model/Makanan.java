@@ -10,7 +10,11 @@ public class Makanan extends MenuItem{
 
     @Override
     public double hitungPajak() { // TODO: logic for pajak
-        return 0;
+        if (this.harga > 50) {
+            return this.harga * 0.08;
+        } else {
+            return this.harga * 0.11;
+        }
     }
 
     @Override
@@ -20,7 +24,7 @@ public class Makanan extends MenuItem{
 
     @Override
     public String toString() { // TODO: format string for information
-        return null;
+        return String.format("%s\t%s\t%.0f", this.kode, this.nama, this.harga);
     }
 
 }
