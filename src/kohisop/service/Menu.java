@@ -48,18 +48,18 @@ public class Menu {
 
     public void tampilkanMenu() {
         System.out.println("=== DAFTAR MENU MINUMAN ===");
-        for (Minuman minuman : getDaftarMinuman()) {
+        for (MenuItem minuman : getDaftarMinuman()) {
             System.out.println(minuman.toString());
         }
 
         System.out.println("\n=== DAFTAR MENU MAKANAN ===");
-        for (Makanan makanan : getDaftarMakanan()) {
+        for (MenuItem makanan : getDaftarMakanan()) {
             System.out.println(makanan.toString());
         }
     }
 
     public ArrayList<MenuItem> getDaftarMinuman() {
-        ArrayList<Minuman> daftarMinuman = new ArrayList<>();
+        ArrayList<MenuItem> daftarMinuman = new ArrayList<>();
         for (MenuItem item : daftarMenu) {
             if (item instanceof Minuman) {
                 daftarMinuman.add((Minuman) item);
@@ -69,7 +69,7 @@ public class Menu {
     }
 
     public ArrayList<MenuItem> getDaftarMakanan() {
-        ArrayList<Makanan> daftarMakanan = new ArrayList<>();
+        ArrayList<MenuItem> daftarMakanan = new ArrayList<>();
         for (MenuItem item : daftarMenu) {
             if (item instanceof Makanan) {
                 daftarMakanan.add((Makanan) item);
