@@ -50,6 +50,11 @@ public class KohiApp {
             System.out.print("\nMasukkan kode menu (atau 'selesai' untuk selesai): ");
             String kode = scanner.nextLine().trim();
 
+            if (kode.equalsIgnoreCase("CC")) {
+                System.out.println("Pesanan dibatalkan. Program dihentikan.");
+                System.exit(0);
+            }
+
             if (kode.equalsIgnoreCase("selesai")) break;
 
             if (!menu.isKodeValid(kode)) {
