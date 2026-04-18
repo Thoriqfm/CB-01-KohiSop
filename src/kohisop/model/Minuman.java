@@ -1,6 +1,6 @@
 package kohisop.model;
 
-public class Minuman extends MenuItem{
+public class Minuman extends MenuItem {
 
     public static final int MAX_KUANTITAS = 3;
 
@@ -26,7 +26,7 @@ public class Minuman extends MenuItem{
 
     @Override
     public String toString() { // TODO: format string for information
-        return String.format("%s - %s (Rp%.0f)", this.kode, this.nama, this.harga);
+        return String.format("%-3s %-35s %7s", this.kode, this.nama, "Rp" + String.format("%.0f", this.harga));
     }
-    
+
 }

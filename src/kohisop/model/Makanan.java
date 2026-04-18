@@ -1,6 +1,6 @@
 package kohisop.model;
 
-public class Makanan extends MenuItem{
+public class Makanan extends MenuItem {
 
     public static final int MAX_KUANTITAS = 2;
 
@@ -24,7 +24,7 @@ public class Makanan extends MenuItem{
 
     @Override
     public String toString() { // TODO: format string for information
-        return String.format("%s\t%s\t%.0f", this.kode, this.nama, this.harga);
+        return String.format("%-3s %-35s %7s", this.kode, this.nama, "Rp" + String.format("%.0f", this.harga));
     }
 
 }
