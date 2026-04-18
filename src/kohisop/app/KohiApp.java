@@ -21,6 +21,12 @@ public class KohiApp {
     private Pesanan pesanan;
     private Scanner scanner = new Scanner(System.in);
 
+    // ANSI escape codes for colored output (for warning messages)
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+
+
+
     public KohiApp() {
         this.menu = new Menu();
         this.pesanan = new Pesanan();
@@ -58,7 +64,7 @@ public class KohiApp {
             if (kode.equalsIgnoreCase("selesai")) break;
 
             if (!menu.isKodeValid(kode)) {
-                System.out.println("Kode menu tidak valid. Silakan coba lagi.");
+                System.out.println(ANSI_RED_BACKGROUND + "Kode menu tidak valid. Silakan coba lagi." + ANSI_RESET);
                 continue;
             }
 
@@ -75,7 +81,7 @@ public class KohiApp {
             int kuantitas = Integer.parseInt(scanner.nextLine().trim());
 
             if (kuantitas < 1 || kuantitas > max) {
-                System.out.println("Kuantitas harus antara 1 dan " + max);
+                System.out.println(ANSI_RED_BACKGROUND + "Kuantitas harus antara 1 - " + max + ANSI_RESET);
                 return;
             }
 
@@ -83,7 +89,7 @@ public class KohiApp {
             System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
 
         } catch (NumberFormatException e) {
-            System.out.println("Input kuantitas tidak valid. Harap masukkan angka.");
+            System.out.println(ANSI_RED_BACKGROUND + "Input kuantitas tidak valid. Harap masukkan angka." + ANSI_RESET);
         }
     }
 
