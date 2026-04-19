@@ -1,6 +1,7 @@
 package kohisop.payment;
 
-public class Emoney implements MetodePembayaran{
+public class Emoney implements MetodePembayaran {
+
     private double saldo;
     public static final double BIAYA_ADMIN = 20.0;
 
@@ -16,7 +17,7 @@ public class Emoney implements MetodePembayaran{
     @Override
     public double getDiskon() {
         // Diskon 7%
-        return 0.07; 
+        return 0.07;
     }
 
     @Override
@@ -32,5 +33,13 @@ public class Emoney implements MetodePembayaran{
     @Override
     public double hitungTotalSetelahDiskon(double totalIDR) {
         return totalIDR - (totalIDR * getDiskon()) + getBiayaAdmin();
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void kurangiSaldo(double jumlah) {
+        this.saldo -= jumlah;
     }
 }

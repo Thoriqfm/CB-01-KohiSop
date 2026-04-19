@@ -6,6 +6,7 @@ import kohisop.model.Pesanan;
 import kohisop.payment.MetodePembayaran;
 
 public class Kuitansi {
+
     private Pesanan pesanan;
     private MetodePembayaran metodePembayaran;
     private MataUang mataUang;
@@ -22,7 +23,6 @@ public class Kuitansi {
         System.out.println(formatFooter());
     }
 
-    // TODO: private method (parameter, logic, etc)
     private String formatHeader() {
         String garis = "=".repeat(45);
         String garisKecil = "-".repeat(45);
@@ -42,7 +42,26 @@ public class Kuitansi {
         StringBuilder sb = new StringBuilder();
         String garisKecil = "-".repeat(45);
 
-        for (ItemPesanan item: pesanan.getAllItem()) {
+        // Tampilkan MINUMAN
+        if (!pesanan.getItemMinuman().isEmpty()) {
+            sb.append(String.format("%s%n", "--- MINUMAN ---"));
+            sb.append(formatItemsByCategory(pesanan.getItemMinuman()));
+        }
+
+        // Tampilkan MAKANAN
+        if (!pesanan.getItemMakanan().isEmpty()) {
+            sb.append(String.format("%s%n", "--- MAKANAN ---"));
+            sb.append(formatItemsByCategory(pesanan.getItemMakanan()));
+        }
+
+        sb.append(garisKecil).append("\n");
+        return sb.toString();
+    }
+
+    private String formatItemsByCategory(java.util.ArrayList<ItemPesanan> items) {
+        StringBuilder sb = new StringBuilder();
+
+        for (ItemPesanan item : items) {
             double subtotalIDR = item.getSubTotal();
             double subtotalKonversi = mataUang.konversiDariIDR(subtotalIDR);
 
@@ -55,7 +74,6 @@ public class Kuitansi {
             }
         }
 
-        sb.append(garisKecil).append("\n");
         return sb.toString();
     }
 
@@ -87,11 +105,11 @@ public class Kuitansi {
         sb.append(String.format("%s%s%n", " ".repeat(10), "Terima kasih sudah berkunjung!"));
         sb.append(garis).append("\n");
 
-        return sb.toString(); 
+        return sb.toString();
     }
 
     private double hitungGrandTotal() {
-        double totalDenganPajak = pesanan.getTotalTanpaPajak();
+        double totalDenganPajak = pesanan.getTotalDenganPajak();
         return metodePembayaran.hitungTotalSetelahDiskon(totalDenganPajak);
     }
 }

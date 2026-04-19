@@ -4,12 +4,12 @@ public class Minuman extends MenuItem {
 
     public static final int MAX_KUANTITAS = 3;
 
-    public Minuman(String kode, String nama, double harga) { // TODO: Constructor untuk Minuman
+    public Minuman(String kode, String nama, double harga) {
         super(kode, nama, harga);
     }
 
     @Override
-    public double hitungPajak() { // TODO: logic for pajak
+    public double hitungPajak() {
         if (this.harga < 50) {
             return 0; // Tidak dikenakan pajak
         } else if (this.harga >= 50 && this.harga <= 55) {
@@ -25,7 +25,7 @@ public class Minuman extends MenuItem {
     }
 
     @Override
-    public String toString() { // TODO: format string for information
+    public String toString() {
         return String.format("%-3s %-35s %7s", this.kode, this.nama, "Rp" + String.format("%.0f", this.harga));
     }
 

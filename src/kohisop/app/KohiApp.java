@@ -25,8 +25,6 @@ public class KohiApp {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
 
-
-
     public KohiApp() {
         this.menu = new Menu();
         this.pesanan = new Pesanan();
@@ -45,14 +43,29 @@ public class KohiApp {
 
         tampilkanTabelPesanan();
 
-        MetodePembayaran metodePembayaran = pilihMetodePembayaran();
         MataUang mataUang = pilihMataUang();
 
-        tampilkanKuitansi(metodePembayaran, mataUang);
+        // Loop untuk retry pembayaran jika gagal
+        while (true) {
+            MetodePembayaran metodePembayaran = pilihMetodePembayaran();
+
+            if (prosesPembayaran(metodePembayaran, mataUang)) {
+                // Pembayaran berhasil, keluar dari loop
+                break;
+            } else {
+                // Pembayaran gagal, tanya apakah ingin retry
+                System.out.print("\nIngin mencoba metode pembayaran lain? (Y/N): ");
+                String jawab = scanner.nextLine().trim().toUpperCase();
+                if (!jawab.equals("Y")) {
+                    System.out.println("Pembayaran dibatalkan. Terima kasih telah berkunjung!");
+                    break;
+                }
+            }
+        }
     }
 
     private void inputPesanan() {
-        while (true) { 
+        while (true) {
             System.out.print("\nMasukkan kode menu (atau 'selesai' untuk selesai): ");
             String kode = scanner.nextLine().trim();
 
@@ -61,7 +74,9 @@ public class KohiApp {
                 System.exit(0);
             }
 
-            if (kode.equalsIgnoreCase("selesai")) break;
+            if (kode.equalsIgnoreCase("selesai")) {
+                break;
+            }
 
             if (!menu.isKodeValid(kode)) {
                 System.out.println(ANSI_RED_BACKGROUND + "Kode menu tidak valid. Silakan coba lagi." + ANSI_RESET);
@@ -85,8 +100,11 @@ public class KohiApp {
                 return;
             }
 
-            pesanan.tambahItem(new ItemPesanan(item, kuantitas));
-            System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
+            if (pesanan.tambahItem(new ItemPesanan(item, kuantitas))) {
+                System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
+            } else {
+                System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Total akan melebihi maksimal " + max + " untuk item ini." + ANSI_RESET);
+            }
 
         } catch (NumberFormatException e) {
             System.out.println(ANSI_RED_BACKGROUND + "Input kuantitas tidak valid. Harap masukkan angka." + ANSI_RESET);
@@ -97,8 +115,8 @@ public class KohiApp {
         System.out.println("\n--- PESANAN ANDA ---");
         for (ItemPesanan item : pesanan.getAllItem()) {
             System.out.printf("%-30s x%d%n",
-                item.getMenuItem().getNama(),
-                item.getKuantitas()
+                    item.getMenuItem().getNama(),
+                    item.getKuantitas()
             );
         }
     }
@@ -141,19 +159,49 @@ public class KohiApp {
         String pilihan = scanner.nextLine().trim();
 
         switch (pilihan) {
-            case "1": return new IDR();
-            case "2": return new USD();
-            case "3": return new EUR();
-            case "4": return new JPY();
-            case "5": return new MYR();
+            case "1":
+                return new IDR();
+            case "2":
+                return new USD();
+            case "3":
+                return new EUR();
+            case "4":
+                return new JPY();
+            case "5":
+                return new MYR();
             default:
                 System.out.println("Pilihan tidak valid. Default ke IDR.");
                 return new IDR();
         }
     }
 
-    private void tampilkanKuitansi(MetodePembayaran metodePembayaran, MataUang mataUang) {
+    private boolean prosesPembayaran(MetodePembayaran metodePembayaran, MataUang mataUang) {
+        double grandTotal = pesanan.getTotalDenganPajak();
+        double totalSetelahDiskon = metodePembayaran.hitungTotalSetelahDiskon(grandTotal);
+
+        // Validasi saldo untuk QRIS dan E-Money
+        if (metodePembayaran instanceof Qris) {
+            Qris qris = (Qris) metodePembayaran;
+            if (!qris.cekSaldoCukup(grandTotal)) {
+                System.out.println(ANSI_RED_BACKGROUND + "Saldo QRIS tidak cukup! Dibutuhkan: "
+                        + String.format("%.2f", totalSetelahDiskon) + " IDR, Saldo: "
+                        + String.format("%.2f", qris.getSaldo()) + " IDR" + ANSI_RESET);
+                return false;
+            }
+            qris.kurangiSaldo(totalSetelahDiskon);
+        } else if (metodePembayaran instanceof Emoney) {
+            Emoney emoney = (Emoney) metodePembayaran;
+            if (!emoney.cekSaldoCukup(grandTotal)) {
+                System.out.println(ANSI_RED_BACKGROUND + "Saldo E-Money tidak cukup! Dibutuhkan: "
+                        + String.format("%.2f", totalSetelahDiskon) + " IDR, Saldo: "
+                        + String.format("%.2f", emoney.getSaldo()) + " IDR" + ANSI_RESET);
+                return false;
+            }
+            emoney.kurangiSaldo(totalSetelahDiskon);
+        }
+
         Kuitansi kuitansi = new Kuitansi(pesanan, metodePembayaran, mataUang);
         kuitansi.cetak();
+        return true;
     }
 }

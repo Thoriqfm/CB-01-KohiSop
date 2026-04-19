@@ -39,11 +39,11 @@ public class Menu {
                 return item;
             }
         }
-        return null; // Mengembalikan null jika kode tidak ditemukan // TODO: implement logic for get by code
+        return null; // Mengembalikan null jika kode tidak ditemukan 
     }
 
     public boolean isKodeValid(String kode) {
-        return cariByKode(kode) != null; // TODO: implement logic for valid code
+        return cariByKode(kode) != null; 
     }
 
     public void tampilkanMenu() {

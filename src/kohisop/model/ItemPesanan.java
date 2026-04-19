@@ -21,15 +21,15 @@ public class ItemPesanan {
         this.kuantitas = kuantitas;
     }
 
-    public double getSubTotal() { // TODO: implement logic subtotal
+    public double getSubTotal() { 
         return menuItem.getHarga() * kuantitas;
     }
 
-    public double getTotalPajak() { // TODO: implement logic pajak
+    public double getTotalPajak() { 
         return menuItem.hitungPajak() * kuantitas;
     }
 
-    public double getTotal() { // TODO: implement logic total
+    public double getTotal() { 
         return getSubTotal() + getTotalPajak();
     }
 }

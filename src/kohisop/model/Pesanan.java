@@ -10,13 +10,28 @@ public class Pesanan {
         daftarItem = new ArrayList<>();
     }
 
-    public void tambahItem(ItemPesanan item) {
+    public boolean tambahItem(ItemPesanan item) {
         ItemPesanan existing = getItemByKode(item.getMenuItem().getKode());
+        int maxKuantitas = getMaxKuantitas(item.getMenuItem());
+
         if (existing != null) {
-            existing.setKuantitas(existing.getKuantitas() + item.getKuantitas());
+            int totalBaru = existing.getKuantitas() + item.getKuantitas();
+
+            if (totalBaru > maxKuantitas) {
+                return false;
+            }
+            existing.setKuantitas(totalBaru);
         } else {
+            if (item.getKuantitas() > maxKuantitas) {
+                return false;
+            }
             daftarItem.add(item);
         }
+        return true;
+    }
+
+    private int getMaxKuantitas(MenuItem item) {
+        return (item instanceof Minuman) ? Minuman.MAX_KUANTITAS : Makanan.MAX_KUANTITAS;
     }
 
     public void hapusItem(String kode) {

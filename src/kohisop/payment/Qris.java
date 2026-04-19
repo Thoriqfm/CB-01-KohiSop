@@ -16,7 +16,7 @@ public class Qris implements MetodePembayaran {
     @Override
     public double getDiskon() {
         // Diskon 5%
-        return 0.05; 
+        return 0.05;
     }
 
     @Override
@@ -33,6 +33,14 @@ public class Qris implements MetodePembayaran {
     @Override
     public double hitungTotalSetelahDiskon(double totalIDR) {
         return totalIDR - (totalIDR * getDiskon()) + getBiayaAdmin();
+    }
+
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void kurangiSaldo(double jumlah) {
+        this.saldo -= jumlah;
     }
 
 }
