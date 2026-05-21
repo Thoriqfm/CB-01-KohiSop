@@ -101,8 +101,8 @@ public class Kuitansi {
                 sb.append(String.format(" Pajak (%.0f%%) %s%n", (pajak / subtotalIDR * 100), mataUang.format(mataUang.konversiDariIDR(pajak))));
             }
         }
-         sb.append(garisKecil).append("\n");
-         return sb.toString();
+        sb.append(garisKecil).append("\n");
+        return sb.toString();
     }
 
     private String formatItemsByCategory(java.util.ArrayList<ItemPesanan> items) {
