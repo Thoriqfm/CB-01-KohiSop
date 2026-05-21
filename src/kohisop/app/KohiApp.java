@@ -53,7 +53,7 @@ public class KohiApp {
                 // Pembayaran berhasil, keluar dari loop
                 break;
             } else {
-                // Pembayaran gagal, tanya apakah ingin retry
+                // Pembayaran gagal
                 System.out.print("\nIngin mencoba metode pembayaran lain? (Y/N): ");
                 String jawab = scanner.nextLine().trim().toUpperCase();
                 if (!jawab.equals("Y")) {
