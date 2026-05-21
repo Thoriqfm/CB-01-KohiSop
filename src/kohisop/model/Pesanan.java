@@ -22,6 +22,12 @@ public class Pesanan {
             }
             existing.setKuantitas(totalBaru);
         } else {
+            String kategori = item.getMenuItem().getKategori();
+            if (kategori.equalsIgnoreCase("Makanan") && getItemMakanan().size() >= 5) {
+                return false;
+            } else if (kategori.equalsIgnoreCase("Minuman") && getItemMinuman().size() >= 5) {
+                return false;
+            }
             if (item.getKuantitas() > maxKuantitas) {
                 return false;
             }

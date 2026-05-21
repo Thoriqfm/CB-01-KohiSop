@@ -31,6 +31,10 @@ public class KohiApp {
     }
 
     public void jalankan() {
+        /*
+         * TODO: Trigger fungsi jalankan() ketika sudah melayani 3 pelanggan,
+         * lalu picu fungsi pemrosesan antrean dapur.
+         */
         System.out.println("--- Selamat datang di KohiSop Cafe! ---");
         menu.tampilkanMenu();
 

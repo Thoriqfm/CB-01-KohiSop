@@ -1,5 +1,10 @@
 package kohisop.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+
 import kohisop.currency.MataUang;
 import kohisop.model.ItemPesanan;
 import kohisop.model.Pesanan;
@@ -42,20 +47,62 @@ public class Kuitansi {
         StringBuilder sb = new StringBuilder();
         String garisKecil = "-".repeat(45);
 
-        // Tampilkan MINUMAN
-        if (!pesanan.getItemMinuman().isEmpty()) {
-            sb.append(String.format("%s%n", "--- MINUMAN ---"));
-            sb.append(formatItemsByCategory(pesanan.getItemMinuman()));
+        ArrayList<ItemPesanan> allPesanan = pesanan.getAllItem();
+        int n = allPesanan.size();
+
+        // Bubble sort
+        for (int i = 0; i < n -1; i++) {
+            for (int j = 0; j < n - 1; j++) {
+                ItemPesanan item1 = allPesanan.get(j);
+                ItemPesanan item2 = allPesanan.get(j + 1);
+
+                String kategori1 = item1.getMenuItem().getKategori();
+                String kategori2 = item2.getMenuItem().getKategori();
+                boolean harusTukar = false;
+
+                // Prioritas: Makanan di atas minuman
+                if (kategori1.equalsIgnoreCase("Minnuman") && kategori2.equalsIgnoreCase("Makanan")) {
+                    harusTukar = true;
+                }
+                // Jika kategori sama, urutkan berdasarkan harga termurah
+                else if (kategori1.equalsIgnoreCase(kategori2)) { 
+                    if (item1.getMenuItem().getHarga() > item2.getMenuItem().getHarga()) {
+                        harusTukar = true;
+                    }
+                }
+
+                if (harusTukar) {
+                    allPesanan.set(j, item2);
+                    allPesanan.set(j + 1, item1);
+                }
+            }
         }
 
-        // Tampilkan MAKANAN
-        if (!pesanan.getItemMakanan().isEmpty()) {
-            sb.append(String.format("%s%n", "--- MAKANAN ---"));
-            sb.append(formatItemsByCategory(pesanan.getItemMakanan()));
-        }
+        String currentKategori = "";
+        for (ItemPesanan item : allPesanan) {
+            String kategoriItem = item.getMenuItem().getKategori();
 
-        sb.append(garisKecil).append("\n");
-        return sb.toString();
+            if (!kategoriItem.equalsIgnoreCase(currentKategori)) {
+                sb.append(String.format("%s%n", "---" + kategoriItem.toUpperCase() + "---"));
+                currentKategori = kategoriItem;
+            }
+
+            double subtotalIDR = item.getSubTotal();
+            double subtotalKonversi = mataUang.konversiDariIDR(subtotalIDR);
+
+            sb.append(String.format("%-22s%n", item.getMenuItem().getNama()));
+            sb.append(String.format(" %-18s x%-3d %s%n", 
+                    mataUang.format(mataUang.konversiDariIDR(item.getMenuItem().getHarga())), 
+                    item.getKuantitas(), 
+                    mataUang.format(subtotalKonversi)));
+
+            double pajak = item.getTotalPajak();
+            if (pajak > 0) {
+                sb.append(String.format(" Pajak (%.0f%%) %s%n", (pajak / subtotalIDR * 100), mataUang.format(mataUang.konversiDariIDR(pajak))));
+            }
+        }
+         sb.append(garisKecil).append("\n");
+         return sb.toString();
     }
 
     private String formatItemsByCategory(java.util.ArrayList<ItemPesanan> items) {
