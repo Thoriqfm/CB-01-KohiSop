@@ -50,7 +50,7 @@ public class Kuitansi {
         ArrayList<ItemPesanan> allPesanan = pesanan.getAllItem();
         int n = allPesanan.size();
 
-        // Bubble sort
+        // ** Bubble sort
         for (int i = 0; i < n -1; i++) {
             for (int j = 0; j < n - 1; j++) {
                 ItemPesanan item1 = allPesanan.get(j);
@@ -61,7 +61,7 @@ public class Kuitansi {
                 boolean harusTukar = false;
 
                 // Prioritas: Makanan di atas minuman
-                if (kategori1.equalsIgnoreCase("Minnuman") && kategori2.equalsIgnoreCase("Makanan")) {
+                if (kategori1.equalsIgnoreCase("Minuman") && kategori2.equalsIgnoreCase("Makanan")) {
                     harusTukar = true;
                 }
                 // Jika kategori sama, urutkan berdasarkan harga termurah

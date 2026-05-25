@@ -35,34 +35,51 @@ public class KohiApp {
          * TODO: Trigger fungsi jalankan() ketika sudah melayani 3 pelanggan,
          * lalu picu fungsi pemrosesan antrean dapur.
          */
-        System.out.println("--- Selamat datang di KohiSop Cafe! ---");
-        menu.tampilkanMenu();
+        int jumlahPelanggan = 0;
+        kohisop.service.DapurService dapurService = new kohisop.service.DapurService();
 
-        inputPesanan();
-
-        if (pesanan.isEmpty()) {
-            System.out.println("Tidak ada pesanan. Terima kasih!");
-            return;
-        }
-
-        tampilkanTabelPesanan();
-
-        MataUang mataUang = pilihMataUang();
-
-        // Loop untuk retry pembayaran jika gagal
         while (true) {
-            MetodePembayaran metodePembayaran = pilihMetodePembayaran();
+            this.pesanan = new kohisop.model.Pesanan();
 
-            if (prosesPembayaran(metodePembayaran, mataUang)) {
-                // Pembayaran berhasil, keluar dari loop
-                break;
-            } else {
-                // Pembayaran gagal
-                System.out.print("\nIngin mencoba metode pembayaran lain? (Y/N): ");
-                String jawab = scanner.nextLine().trim().toUpperCase();
-                if (!jawab.equals("Y")) {
-                    System.out.println("Pembayaran dibatalkan. Terima kasih telah berkunjung!");
+            System.out.println("--- Selamat datang di KohiSop Cafe! ---");
+            menu.tampilkanMenu();
+
+            inputPesanan();
+
+            if (pesanan.isEmpty()) {
+                System.out.println("Tidak ada pesanan. Terima kasih!");
+                return;
+            }
+
+            tampilkanTabelPesanan();
+
+            MataUang matauang = pilihMataUang();
+            boolean pembayaranBerhasil = false;
+
+            while (true) {
+                MetodePembayaran metodePembayaran = pilihMetodePembayaran();
+                
+                if (prosesPembayaran(metodePembayaran, matauang)) {
+                    pembayaranBerhasil = true;
                     break;
+                } else {
+                    System.out.print("\nIngin mencoba metode pembayaran lain? (Y/N): ");
+                    String jawab = scanner.nextLine().trim().toUpperCase();
+                    if (!jawab.equals("Y")) {
+                        System.out.println("Pembayaran dibatalkan.");
+                        break;
+                    }
+                }
+            }
+
+            if (pembayaranBerhasil) {
+                dapurService.tambahPesanan(pesanan);
+
+                jumlahPelanggan++;
+                System.out.println("\n[Sistem] Pelanggan ke-" + jumlahPelanggan + " berhasil dilayani.");
+
+                if (jumlahPelanggan % 3 == 0) {
+                    dapurService.prosesAntreanDapur();
                 }
             }
         }
