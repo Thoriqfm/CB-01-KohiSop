@@ -148,28 +148,44 @@ public class KohiApp {
     }
 
     private MetodePembayaran pilihMetodePembayaran() {
-        System.out.println("\nPilih metode pembayaran:");
-        System.out.println("1. Tunai");
-        System.out.println("2. QRIS (diskon 5%)");
-        System.out.println("3. E-Money (diskon 7%)");
-        System.out.print("Pilihan: ");
+        while (true) {
+            System.out.println("\nPilih metode pembayaran:");
+            System.out.println("1. Tunai");
+            System.out.println("2. QRIS (diskon 5%)");
+            System.out.println("3. E-Money (diskon 7%)");
+            System.out.print("Pilihan: ");
 
-        String pilihan = scanner.nextLine().trim();
+            String pilihan = scanner.nextLine().trim();
 
-        switch (pilihan) {
-            case "1":
-                return new Tunai();
-            case "2":
-                System.out.print("Masukkan saldo QRIS: ");
-                double saldoQRIS = Double.parseDouble(scanner.nextLine().trim());
-                return new Qris(saldoQRIS);
-            case "3":
-                System.out.print("Masukkan saldo E-Money: ");
-                double saldoEMoney = Double.parseDouble(scanner.nextLine().trim());
-                return new Emoney(saldoEMoney);
-            default:
-                System.out.println("Pilihan tidak valid. Default ke Tunai.");
-                return new Tunai();
+            switch (pilihan) {
+                case "1":
+                    return new Tunai();
+                case "2":
+                    try {
+                        System.out.print("Masukkan saldo QRIS: ");
+                        double saldoQRIS = Double.parseDouble(scanner.nextLine().trim());
+                        return new Qris(saldoQRIS);
+                    } catch (NumberFormatException e) {
+                        System.out.println(
+                                ANSI_RED_BACKGROUND + "Input saldo QRIS tidak valid. Harap masukkan angka."
+                                        + ANSI_RESET);
+                    }
+                    break;
+                case "3":
+                    try {
+                        System.out.print("Masukkan saldo E-Money: ");
+                        double saldoEMoney = Double.parseDouble(scanner.nextLine().trim());
+                        return new Emoney(saldoEMoney);
+                    } catch (NumberFormatException e) {
+                        System.out.println(
+                                ANSI_RED_BACKGROUND + "Input saldo E-Money tidak valid. Harap masukkan angka."
+                                        + ANSI_RESET);
+                    }
+                    break;
+                default:
+                    System.out.println("Pilihan tidak valid. Silahkan coba lagi.");
+                    break;
+            }
         }
     }
 
