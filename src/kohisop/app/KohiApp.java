@@ -58,7 +58,7 @@ public class KohiApp {
 
             while (true) {
                 MetodePembayaran metodePembayaran = pilihMetodePembayaran();
-                
+
                 if (prosesPembayaran(metodePembayaran, matauang)) {
                     pembayaranBerhasil = true;
                     break;
@@ -112,23 +112,29 @@ public class KohiApp {
         MenuItem item = menu.cariByKode(kode);
         int max = (item instanceof Minuman) ? Minuman.MAX_KUANTITAS : Makanan.MAX_KUANTITAS;
 
-        System.out.print("Masukkan kuantitas (maks " + max + "): ");
-        try {
-            int kuantitas = Integer.parseInt(scanner.nextLine().trim());
+        boolean isValid = false;
 
-            if (kuantitas < 1 || kuantitas > max) {
-                System.out.println(ANSI_RED_BACKGROUND + "Kuantitas harus antara 1 - " + max + ANSI_RESET);
-                return;
+        while (isValid == false) {
+            System.out.print("Masukkan kuantitas (maks " + max + "): ");
+            try {
+                int kuantitas = Integer.parseInt(scanner.nextLine().trim());
+
+                if (kuantitas < 1 || kuantitas > max) {
+                    System.out.println(ANSI_RED_BACKGROUND + "Kuantitas harus antara 1 - " + max + ANSI_RESET);
+                }
+
+                if (pesanan.tambahItem(new ItemPesanan(item, kuantitas))) {
+                    System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
+                    isValid = true;
+                } else {
+                    System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Total akan melebihi maksimal " + max
+                            + " untuk item ini." + ANSI_RESET);
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println(
+                        ANSI_RED_BACKGROUND + "Input kuantitas tidak valid. Harap masukkan angka." + ANSI_RESET);
             }
-
-            if (pesanan.tambahItem(new ItemPesanan(item, kuantitas))) {
-                System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
-            } else {
-                System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Total akan melebihi maksimal " + max + " untuk item ini." + ANSI_RESET);
-            }
-
-        } catch (NumberFormatException e) {
-            System.out.println(ANSI_RED_BACKGROUND + "Input kuantitas tidak valid. Harap masukkan angka." + ANSI_RESET);
         }
     }
 
@@ -137,8 +143,7 @@ public class KohiApp {
         for (ItemPesanan item : pesanan.getAllItem()) {
             System.out.printf("%-30s x%d%n",
                     item.getMenuItem().getNama(),
-                    item.getKuantitas()
-            );
+                    item.getKuantitas());
         }
     }
 
