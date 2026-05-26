@@ -13,7 +13,14 @@ public class DapurService {
     private Stack<ItemPesanan> antreanMinuman;
 
     public DapurService() {
-        Comparator<ItemPesanan> pembandingHarga = (a, b) -> Double.compare(b.getMenuItem().getHarga(), a.getMenuItem().getHarga());
+        Comparator<ItemPesanan> pembandingHarga = (a, b) -> {
+            int compareHarga = Double.compare(b.getMenuItem().getHarga(), a.getMenuItem().getHarga());
+            if (compareHarga != 0) {
+                return compareHarga;
+            }
+            // jika harga sama, urutkan berdasarkan kode menu (A - Z)
+            return a.getMenuItem().getKode().compareTo(b.getMenuItem().getKode());
+        };
         this.antreanMakanan = new PriorityQueue<>(pembandingHarga);
         this.antreanMinuman = new Stack<>();
     }
@@ -48,10 +55,10 @@ public class DapurService {
         }
 
         System.out.println("\n--- MEMBUAT MINUMAN (Last-Ordered-First-Served) ---");
-        if (antreanMakanan.isEmpty()) {
+        if (antreanMinuman.isEmpty()) {
             System.out.println("[Dapur] Tidak ada antrean minuman.");
         } else {
-            while (!antreanMakanan.isEmpty()) {
+            while (!antreanMinuman.isEmpty()) {
                 ItemPesanan minuman = antreanMinuman.pop();
                 System.out.printf("[Dapur] Meracik: %s x%d%n", 
                     minuman.getMenuItem().getNama(), 

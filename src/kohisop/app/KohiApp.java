@@ -48,7 +48,7 @@ public class KohiApp {
 
             if (pesanan.isEmpty()) {
                 System.out.println("Tidak ada pesanan. Terima kasih!");
-                return;
+                continue;
             }
 
             tampilkanTabelPesanan();
@@ -121,14 +121,26 @@ public class KohiApp {
 
                 if (kuantitas < 1 || kuantitas > max) {
                     System.out.println(ANSI_RED_BACKGROUND + "Kuantitas harus antara 1 - " + max + ANSI_RESET);
+                    continue;
                 }
 
                 if (pesanan.tambahItem(new ItemPesanan(item, kuantitas))) {
                     System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
                     isValid = true;
                 } else {
-                    System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Total akan melebihi maksimal " + max
-                            + " untuk item ini." + ANSI_RESET);
+                    // Cek alasan gagalnya
+                    String kategori = item.getKategori();
+                    int jumlahJenis = kategori.equalsIgnoreCase("Makanan")
+                            ? pesanan.getItemMakanan().size()
+                            : pesanan.getItemMinuman().size();
+
+                    if (jumlahJenis >= 5 && pesanan.getItemByKode(item.getKode()) == null) {
+                        System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Keranjang untuk kategori "
+                                + kategori + " sudah mencapai batas maksimal 5 jenis." + ANSI_RESET);
+                    } else {
+                        System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Total akan melebihi maksimal "
+                                + max + " untuk item ini." + ANSI_RESET);
+                    }
                 }
 
             } catch (NumberFormatException e) {
@@ -153,7 +165,7 @@ public class KohiApp {
             System.out.println("1. Tunai");
             System.out.println("2. QRIS (diskon 5%)");
             System.out.println("3. E-Money (diskon 7%)");
-            System.out.print("Pilihan: ");
+            System.out.print("Pilihan (1 - 3): ");
 
             String pilihan = scanner.nextLine().trim();
 
@@ -190,30 +202,31 @@ public class KohiApp {
     }
 
     private MataUang pilihMataUang() {
-        System.out.println("\nPilih mata uang:");
-        System.out.println("1. IDR - Indonesian Rupiah");
-        System.out.println("2. USD - US Dollar");
-        System.out.println("3. EUR - Euro");
-        System.out.println("4. JPY - Japanese Yen");
-        System.out.println("5. MYR - Malaysian Ringgit");
-        System.out.print("Pilihan: ");
+        while (true) {
+            System.out.println("\nPilih mata uang:");
+            System.out.println("1. IDR - Indonesian Rupiah");
+            System.out.println("2. USD - US Dollar");
+            System.out.println("3. EUR - Euro");
+            System.out.println("4. JPY - Japanese Yen");
+            System.out.println("5. MYR - Malaysian Ringgit");
+            System.out.print("Pilihan (1 - 5): ");
 
-        String pilihan = scanner.nextLine().trim();
+            String pilihan = scanner.nextLine().trim();
 
-        switch (pilihan) {
-            case "1":
-                return new IDR();
-            case "2":
-                return new USD();
-            case "3":
-                return new EUR();
-            case "4":
-                return new JPY();
-            case "5":
-                return new MYR();
-            default:
-                System.out.println("Pilihan tidak valid. Default ke IDR.");
-                return new IDR();
+            switch (pilihan) {
+                case "1":
+                    return new IDR();
+                case "2":
+                    return new USD();
+                case "3":
+                    return new EUR();
+                case "4":
+                    return new JPY();
+                case "5":
+                    return new MYR();
+                default:
+                    System.out.println(ANSI_RED_BACKGROUND + "Pilihan tidak valid. Silahkan coba lagi." + ANSI_RESET);
+            }
         }
     }
 
