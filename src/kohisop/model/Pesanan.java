@@ -23,6 +23,7 @@ public class Pesanan {
         return member != null && member.isBebasPajak();
     }
 
+    // Peran 2: Validasi Batasan Pesanan
     public boolean tambahItem(ItemPesanan item) {
         ItemPesanan existing = getItemByKode(item.getMenuItem().getKode());
         int maxKuantitas = (item.getMenuItem() instanceof Minuman) ? Minuman.MAX_KUANTITAS : Makanan.MAX_KUANTITAS;
@@ -32,9 +33,13 @@ public class Pesanan {
             if (totalBaru > maxKuantitas) return false;
             existing.setKuantitas(totalBaru);
         } else {
+            // Membatasi pembelian maksimal 5 jenis berbeda untuk tiap kategori
             String kategori = item.getMenuItem().getKategori();
-            if (kategori.equalsIgnoreCase("Makanan") && getItemMakanan().size() >= 5) return false;
-            else if (kategori.equalsIgnoreCase("Minuman") && getItemMinuman().size() >= 5) return false;
+            if (kategori.equalsIgnoreCase("Makanan") && getItemMakanan().size() >= 5) {
+                return false;
+            } else if (kategori.equalsIgnoreCase("Minuman") && getItemMinuman().size() >= 5) {
+                return false;
+            }
             
             if (item.getKuantitas() > maxKuantitas) return false;
             daftarItem.add(item);
@@ -55,7 +60,6 @@ public class Pesanan {
 
     public ArrayList<ItemPesanan> getAllItem() { return daftarItem; }
 
-    // Dikelompokkan jenis makanan lalu minuman, kemudian diurutkan berdasarkan harga
     public ArrayList<ItemPesanan> getSortedItems() {
         ArrayList<ItemPesanan> sorted = new ArrayList<>(daftarItem);
         sorted.sort((a, b) -> {

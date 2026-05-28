@@ -9,11 +9,11 @@ public class Member {
 
     public Member(String nama) {
         this.nama = nama;
-        this.kodeMember = generateKode();
+        this.kodeMember = generateKode(); // Generate otomatis saat objek dibuat
         this.poin = 0;
     }
 
-    // Generate 6 karakter alfanumerik acak (A-F, 0-9)
+    // Peran 2: Generator 6 karakter alfanumerik acak (A-F, 0-9)
     private String generateKode() {
         String chars = "ABCDEF0123456789";
         StringBuilder sb = new StringBuilder();
@@ -36,17 +36,17 @@ public class Member {
         return poin;
     }
 
-    // Bebas pajak jika ada huruf "A"
+    // Peran 2: Mesin kalkulasi pajak (cek status "A")
     public boolean isBebasPajak() {
         return kodeMember.contains("A");
     }
 
-    // Poin ganda jika ada huruf "A"
+    // Mengecek apakah berhak dapat poin ganda
     public boolean isPoinGanda() {
         return kodeMember.contains("A");
     }
 
-    // 1 poin untuk setiap kelipatan 10 IDR
+    // Peran 2: Mengelola penambahan poin otomatis (1 poin tiap kelipatan 10)
     public void tambahPoin(double totalBelanjaIDR) {
         int tambahan = (int) (totalBelanjaIDR / 10);
         if (isPoinGanda()) {
@@ -55,7 +55,7 @@ public class Member {
         this.poin += tambahan;
     }
 
-    // 1 poin = 2 IDR. Mengembalikan nominal diskon IDR
+    // Peran 2: Integrasi pemotongan (1 poin = 2 IDR)
     public double gunakanPoin(double totalTagihanIDR) {
         double nilaiPoinIDR = this.poin * 2.0;
 

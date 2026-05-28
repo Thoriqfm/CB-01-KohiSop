@@ -17,10 +17,10 @@ public class ItemPesanan {
         return menuItem.getHarga() * kuantitas;
     }
 
-    // Logika pajak disesuaikan dengan status member
+    // Peran 2: Mesin kalkulasi bebas pajak
     public double getTotalPajak(boolean bebasPajak) { 
         if (bebasPajak) {
-            return 0;
+            return 0; // Bebas pajak jika member memenuhi syarat
         }
         return menuItem.hitungPajak() * kuantitas;
     }

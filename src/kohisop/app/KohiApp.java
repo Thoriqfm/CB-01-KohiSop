@@ -276,48 +276,43 @@ public class KohiApp {
         int poinSebelum = 0;
         int poinDidapat = 0;
 
-        // Simulasi kalkulasi poin (belum dipotong secara permanen)
+        // PERAN 2: Integrasi Pembayaran Poin & Kondisi Pengunci IDR
         if (member != null) {
             poinSebelum = member.getPoin();
-            // Pemotongan poin HANYA berlaku jika pembeli membayar menggunakan IDR
+            // Pemotongan poin HANYA valid jika pelanggan memilih mata uang IDR
             if (mataUang.getKode().equals("IDR") && member.getPoin() > 0) {
-                // Asumsi: nilai 1 poin = 2 IDR. Jika poin > totalSetelahDiskon, pakai seperlunya.
+                // Kalkulasi dan pemotongan poin dilakukan di sini
                 double nilaiPoin = member.getPoin() * 2.0;
                 poinDipakaiIDR = Math.min(nilaiPoin, totalSetelahDiskon);
-                // Pembulatan ke kelipatan 2 karena 1 poin = 2 IDR
                 poinDipakaiIDR = Math.ceil(poinDipakaiIDR / 2.0) * 2.0; 
             }
         }
 
         double finalTagihanIDR = totalSetelahDiskon - poinDipakaiIDR;
 
-        // Validasi saldo untuk QRIS dan E-Money
+        // Validasi saldo
         if (metodePembayaran instanceof Qris) {
             Qris qris = (Qris) metodePembayaran;
             if (!qris.cekSaldoCukup(finalTagihanIDR)) {
-                System.out.println(ANSI_RED_BACKGROUND + "Saldo QRIS tidak cukup! Dibutuhkan: "
-                        + String.format("%.2f", finalTagihanIDR) + " IDR, Saldo: "
-                        + String.format("%.2f", qris.getSaldo()) + " IDR" + ANSI_RESET);
-                return false; // Kembali jika gagal
+                System.out.println(ANSI_RED_BACKGROUND + "Saldo QRIS tidak cukup!" + ANSI_RESET);
+                return false; 
             }
             qris.kurangiSaldo(finalTagihanIDR);
         } else if (metodePembayaran instanceof Emoney) {
             Emoney emoney = (Emoney) metodePembayaran;
             if (!emoney.cekSaldoCukup(finalTagihanIDR)) {
-                System.out.println(ANSI_RED_BACKGROUND + "Saldo E-Money tidak cukup! Dibutuhkan: "
-                        + String.format("%.2f", finalTagihanIDR) + " IDR, Saldo: "
-                        + String.format("%.2f", emoney.getSaldo()) + " IDR" + ANSI_RESET);
-                return false; // Kembali jika gagal
+                System.out.println(ANSI_RED_BACKGROUND + "Saldo E-Money tidak cukup!" + ANSI_RESET);
+                return false; 
             }
             emoney.kurangiSaldo(finalTagihanIDR);
         }
 
-        // Jika pembayaran sukses, baru potong poin dan tambahkan poin baru
+        // Eksekusi potong/tambah poin sesungguhnya jika transaksi berhasil
         if (member != null) {
             if (poinDipakaiIDR > 0) {
-                member.gunakanPoin(poinDipakaiIDR); // Potong poin beneran
+                member.gunakanPoin(poinDipakaiIDR); 
             }
-            member.tambahPoin(finalTagihanIDR); // Beri poin dari sisa tagihan akhir
+            member.tambahPoin(finalTagihanIDR); 
             poinDidapat = member.getPoin() - (poinSebelum - (int)(poinDipakaiIDR / 2.0));
         }
 
