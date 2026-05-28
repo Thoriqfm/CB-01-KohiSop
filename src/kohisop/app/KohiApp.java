@@ -1,17 +1,24 @@
 package kohisop.app;
 
+import java.util.LinkedList;
 import java.util.Scanner;
+import kohisop.Membership.Member;
 import kohisop.currency.EUR;
 import kohisop.currency.IDR;
 import kohisop.currency.JPY;
 import kohisop.currency.MYR;
 import kohisop.currency.MataUang;
 import kohisop.currency.USD;
-import kohisop.model.*;
+import kohisop.model.ItemPesanan;
+import kohisop.model.Makanan;
+import kohisop.model.MenuItem;
+import kohisop.model.Minuman;
+import kohisop.model.Pesanan;
 import kohisop.payment.Emoney;
 import kohisop.payment.MetodePembayaran;
 import kohisop.payment.Qris;
 import kohisop.payment.Tunai;
+import kohisop.service.DapurService;
 import kohisop.service.Kuitansi;
 import kohisop.service.Menu;
 
@@ -19,6 +26,7 @@ public class KohiApp {
 
     private Menu menu;
     private Pesanan pesanan;
+    private LinkedList<Member> databaseMember; // Tambahan untuk menyimpan data member
     private Scanner scanner = new Scanner(System.in);
 
     // ANSI escape codes for colored output (for warning messages)
@@ -28,27 +36,50 @@ public class KohiApp {
     public KohiApp() {
         this.menu = new Menu();
         this.pesanan = new Pesanan();
+        this.databaseMember = new LinkedList<>();
     }
 
     public void jalankan() {
-        /*
-         * TODO: Trigger fungsi jalankan() ketika sudah melayani 3 pelanggan,
-         * lalu picu fungsi pemrosesan antrean dapur.
-         */
         int jumlahPelanggan = 0;
-        kohisop.service.DapurService dapurService = new kohisop.service.DapurService();
+        DapurService dapurService = new DapurService();
 
         while (true) {
-            this.pesanan = new kohisop.model.Pesanan();
+            this.pesanan = new Pesanan();
 
+            System.out.println("=======================================");
             System.out.println("--- Selamat datang di KohiSop Cafe! ---");
-            menu.tampilkanMenu();
+            System.out.println("=======================================");
 
+            // --- BAGIAN MEMBERSHIP ---
+            System.out.print("Apakah Anda member? (Y/N/Daftar): ");
+            String isMember = scanner.nextLine().trim().toUpperCase();
+            
+            if (isMember.equals("Y")) {
+                System.out.print("Masukkan kode member: ");
+                String kodeInput = scanner.nextLine().trim();
+                Member m = cariMember(kodeInput);
+                if (m != null) {
+                    pesanan.setMember(m);
+                    System.out.println("Selamat datang kembali, " + m.getNama() + "! Poin Anda: " + m.getPoin());
+                } else {
+                    System.out.println(ANSI_RED_BACKGROUND + "Member tidak ditemukan. Melanjutkan sebagai Non-Member." + ANSI_RESET);
+                }
+            } else if (isMember.equals("DAFTAR")) {
+                System.out.print("Masukkan nama Anda: ");
+                String namaBaru = scanner.nextLine().trim();
+                Member newMember = new Member(namaBaru);
+                databaseMember.add(newMember);
+                pesanan.setMember(newMember);
+                System.out.println("Berhasil mendaftar! Kode Member Anda: " + newMember.getKodeMember());
+            }
+
+            // --- TAMPILKAN MENU & INPUT PESANAN ---
+            menu.tampilkanMenu();
             inputPesanan();
 
             if (pesanan.isEmpty()) {
                 System.out.println("Tidak ada pesanan. Terima kasih!");
-                continue;
+                continue; // Lanjut ke pelanggan berikutnya
             }
 
             tampilkanTabelPesanan();
@@ -85,6 +116,15 @@ public class KohiApp {
         }
     }
 
+    private Member cariMember(String kode) {
+        for (Member m : databaseMember) {
+            if (m.getKodeMember().equalsIgnoreCase(kode)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
     private void inputPesanan() {
         while (true) {
             System.out.print("\nMasukkan kode menu (atau 'selesai' untuk selesai): ");
@@ -114,10 +154,19 @@ public class KohiApp {
 
         boolean isValid = false;
 
-        while (isValid == false) {
-            System.out.print("Masukkan kuantitas (maks " + max + "): ");
+        while (!isValid) {
+            System.out.print("Masukkan kuantitas (maks " + max + ", ketik 'S' atau '0' untuk skip): ");
+            String input = scanner.nextLine().trim();
+
+            // Memenuhi syarat "S" (skip) atau 0 dari studi kasus KohiSop II
+            if (input.equalsIgnoreCase("S") || input.equals("0")) {
+                System.out.println("Pesanan untuk item " + item.getNama() + " dibatalkan.");
+                return;
+            }
+
             try {
-                int kuantitas = Integer.parseInt(scanner.nextLine().trim());
+                // Memenuhi syarat "Secara default adalah satu porsi" jika input kosong
+                int kuantitas = input.isEmpty() ? 1 : Integer.parseInt(input);
 
                 if (kuantitas < 1 || kuantitas > max) {
                     System.out.println(ANSI_RED_BACKGROUND + "Kuantitas harus antara 1 - " + max + ANSI_RESET);
@@ -128,7 +177,6 @@ public class KohiApp {
                     System.out.println(item.getNama() + " x" + kuantitas + " ditambahkan ke pesanan.");
                     isValid = true;
                 } else {
-                    // Cek alasan gagalnya
                     String kategori = item.getKategori();
                     int jumlahJenis = kategori.equalsIgnoreCase("Makanan")
                             ? pesanan.getItemMakanan().size()
@@ -141,11 +189,11 @@ public class KohiApp {
                         System.out.println(ANSI_RED_BACKGROUND + "Tidak bisa menambah! Total akan melebihi maksimal "
                                 + max + " untuk item ini." + ANSI_RESET);
                     }
+                    isValid = true; // Keluar dari loop agar tidak terperangkap
                 }
 
             } catch (NumberFormatException e) {
-                System.out.println(
-                        ANSI_RED_BACKGROUND + "Input kuantitas tidak valid. Harap masukkan angka." + ANSI_RESET);
+                System.out.println(ANSI_RED_BACKGROUND + "Input kuantitas tidak valid. Harap masukkan angka." + ANSI_RESET);
             }
         }
     }
@@ -153,9 +201,7 @@ public class KohiApp {
     private void tampilkanTabelPesanan() {
         System.out.println("\n--- PESANAN ANDA ---");
         for (ItemPesanan item : pesanan.getAllItem()) {
-            System.out.printf("%-30s x%d%n",
-                    item.getMenuItem().getNama(),
-                    item.getKuantitas());
+            System.out.printf("%-30s x%d%n", item.getMenuItem().getNama(), item.getKuantitas());
         }
     }
 
@@ -178,9 +224,7 @@ public class KohiApp {
                         double saldoQRIS = Double.parseDouble(scanner.nextLine().trim());
                         return new Qris(saldoQRIS);
                     } catch (NumberFormatException e) {
-                        System.out.println(
-                                ANSI_RED_BACKGROUND + "Input saldo QRIS tidak valid. Harap masukkan angka."
-                                        + ANSI_RESET);
+                        System.out.println(ANSI_RED_BACKGROUND + "Input saldo QRIS tidak valid. Harap masukkan angka." + ANSI_RESET);
                     }
                     break;
                 case "3":
@@ -189,9 +233,7 @@ public class KohiApp {
                         double saldoEMoney = Double.parseDouble(scanner.nextLine().trim());
                         return new Emoney(saldoEMoney);
                     } catch (NumberFormatException e) {
-                        System.out.println(
-                                ANSI_RED_BACKGROUND + "Input saldo E-Money tidak valid. Harap masukkan angka."
-                                        + ANSI_RESET);
+                        System.out.println(ANSI_RED_BACKGROUND + "Input saldo E-Money tidak valid. Harap masukkan angka." + ANSI_RESET);
                     }
                     break;
                 default:
@@ -214,16 +256,11 @@ public class KohiApp {
             String pilihan = scanner.nextLine().trim();
 
             switch (pilihan) {
-                case "1":
-                    return new IDR();
-                case "2":
-                    return new USD();
-                case "3":
-                    return new EUR();
-                case "4":
-                    return new JPY();
-                case "5":
-                    return new MYR();
+                case "1": return new IDR();
+                case "2": return new USD();
+                case "3": return new EUR();
+                case "4": return new JPY();
+                case "5": return new MYR();
                 default:
                     System.out.println(ANSI_RED_BACKGROUND + "Pilihan tidak valid. Silahkan coba lagi." + ANSI_RESET);
             }
@@ -234,28 +271,57 @@ public class KohiApp {
         double grandTotal = pesanan.getTotalDenganPajak();
         double totalSetelahDiskon = metodePembayaran.hitungTotalSetelahDiskon(grandTotal);
 
+        Member member = pesanan.getMember();
+        double poinDipakaiIDR = 0;
+        int poinSebelum = 0;
+        int poinDidapat = 0;
+
+        // Simulasi kalkulasi poin (belum dipotong secara permanen)
+        if (member != null) {
+            poinSebelum = member.getPoin();
+            // Pemotongan poin HANYA berlaku jika pembeli membayar menggunakan IDR
+            if (mataUang.getKode().equals("IDR") && member.getPoin() > 0) {
+                // Asumsi: nilai 1 poin = 2 IDR. Jika poin > totalSetelahDiskon, pakai seperlunya.
+                double nilaiPoin = member.getPoin() * 2.0;
+                poinDipakaiIDR = Math.min(nilaiPoin, totalSetelahDiskon);
+                // Pembulatan ke kelipatan 2 karena 1 poin = 2 IDR
+                poinDipakaiIDR = Math.ceil(poinDipakaiIDR / 2.0) * 2.0; 
+            }
+        }
+
+        double finalTagihanIDR = totalSetelahDiskon - poinDipakaiIDR;
+
         // Validasi saldo untuk QRIS dan E-Money
         if (metodePembayaran instanceof Qris) {
             Qris qris = (Qris) metodePembayaran;
-            if (!qris.cekSaldoCukup(grandTotal)) {
+            if (!qris.cekSaldoCukup(finalTagihanIDR)) {
                 System.out.println(ANSI_RED_BACKGROUND + "Saldo QRIS tidak cukup! Dibutuhkan: "
-                        + String.format("%.2f", totalSetelahDiskon) + " IDR, Saldo: "
+                        + String.format("%.2f", finalTagihanIDR) + " IDR, Saldo: "
                         + String.format("%.2f", qris.getSaldo()) + " IDR" + ANSI_RESET);
-                return false;
+                return false; // Kembali jika gagal
             }
-            qris.kurangiSaldo(totalSetelahDiskon);
+            qris.kurangiSaldo(finalTagihanIDR);
         } else if (metodePembayaran instanceof Emoney) {
             Emoney emoney = (Emoney) metodePembayaran;
-            if (!emoney.cekSaldoCukup(grandTotal)) {
+            if (!emoney.cekSaldoCukup(finalTagihanIDR)) {
                 System.out.println(ANSI_RED_BACKGROUND + "Saldo E-Money tidak cukup! Dibutuhkan: "
-                        + String.format("%.2f", totalSetelahDiskon) + " IDR, Saldo: "
+                        + String.format("%.2f", finalTagihanIDR) + " IDR, Saldo: "
                         + String.format("%.2f", emoney.getSaldo()) + " IDR" + ANSI_RESET);
-                return false;
+                return false; // Kembali jika gagal
             }
-            emoney.kurangiSaldo(totalSetelahDiskon);
+            emoney.kurangiSaldo(finalTagihanIDR);
         }
 
-        Kuitansi kuitansi = new Kuitansi(pesanan, metodePembayaran, mataUang);
+        // Jika pembayaran sukses, baru potong poin dan tambahkan poin baru
+        if (member != null) {
+            if (poinDipakaiIDR > 0) {
+                member.gunakanPoin(poinDipakaiIDR); // Potong poin beneran
+            }
+            member.tambahPoin(finalTagihanIDR); // Beri poin dari sisa tagihan akhir
+            poinDidapat = member.getPoin() - (poinSebelum - (int)(poinDipakaiIDR / 2.0));
+        }
+
+        Kuitansi kuitansi = new Kuitansi(pesanan, metodePembayaran, mataUang, poinDipakaiIDR, poinSebelum, poinDidapat);
         kuitansi.cetak();
         return true;
     }

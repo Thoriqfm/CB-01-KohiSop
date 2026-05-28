@@ -9,27 +9,23 @@ public class ItemPesanan {
         this.kuantitas = kuantitas;
     }
 
-    public MenuItem getMenuItem() {
-        return menuItem;
-    }
-
-    public int getKuantitas() {
-        return kuantitas;
-    }
-
-    public void setKuantitas(int kuantitas) {
-        this.kuantitas = kuantitas;
-    }
+    public MenuItem getMenuItem() { return menuItem; }
+    public int getKuantitas() { return kuantitas; }
+    public void setKuantitas(int kuantitas) { this.kuantitas = kuantitas; }
 
     public double getSubTotal() { 
         return menuItem.getHarga() * kuantitas;
     }
 
-    public double getTotalPajak() { 
+    // Logika pajak disesuaikan dengan status member
+    public double getTotalPajak(boolean bebasPajak) { 
+        if (bebasPajak) {
+            return 0;
+        }
         return menuItem.hitungPajak() * kuantitas;
     }
 
-    public double getTotal() { 
-        return getSubTotal() + getTotalPajak();
+    public double getTotal(boolean bebasPajak) { 
+        return getSubTotal() + getTotalPajak(bebasPajak);
     }
 }
