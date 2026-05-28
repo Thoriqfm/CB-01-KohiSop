@@ -8,6 +8,7 @@ public class Makanan extends MenuItem {
         super(kode, nama, harga);
     }
 
+    // Peran 2: Detail persentase pajak berjenjang makanan
     @Override
     public double hitungPajak() {
         if (this.harga > 50) {
@@ -26,5 +27,4 @@ public class Makanan extends MenuItem {
     public String toString() {
         return String.format("%-3s %-35s %7s", this.kode, this.nama, "Rp" + String.format("%.0f", this.harga));
     }
-
 }
