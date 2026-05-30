@@ -37,6 +37,11 @@ public class KohiApp {
         this.menu = new Menu();
         this.pesanan = new Pesanan();
         this.databaseMember = new LinkedList<>();
+
+        // Initialize dengan beberapa member testing
+        databaseMember.add(new Member("John Doe", "A12345"));  // Bebas pajak + Poin ganda
+        databaseMember.add(new Member("Jane Smith", "B54321")); // Regular member
+        databaseMember.add(new Member("Alex Brown", "ABCDEF")); // Bebas pajak + Poin ganda
     }
 
     public void jalankan() {
@@ -53,14 +58,14 @@ public class KohiApp {
             // --- BAGIAN MEMBERSHIP ---
             System.out.print("Apakah Anda member? (Y/N/Daftar): ");
             String isMember = scanner.nextLine().trim().toUpperCase();
-            
+
             if (isMember.equals("Y")) {
                 System.out.print("Masukkan kode member: ");
                 String kodeInput = scanner.nextLine().trim();
-                Member m = cariMember(kodeInput);
-                if (m != null) {
-                    pesanan.setMember(m);
-                    System.out.println("Selamat datang kembali, " + m.getNama() + "! Poin Anda: " + m.getPoin());
+                Member memberFound = cariMember(kodeInput);
+                if (memberFound != null) {
+                    pesanan.setMember(memberFound);
+                    System.out.println("Selamat datang kembali, " + memberFound.getNama() + "! Poin Anda: " + memberFound.getPoin());
                 } else {
                     System.out.println(ANSI_RED_BACKGROUND + "Member tidak ditemukan. Melanjutkan sebagai Non-Member." + ANSI_RESET);
                 }
@@ -256,11 +261,16 @@ public class KohiApp {
             String pilihan = scanner.nextLine().trim();
 
             switch (pilihan) {
-                case "1": return new IDR();
-                case "2": return new USD();
-                case "3": return new EUR();
-                case "4": return new JPY();
-                case "5": return new MYR();
+                case "1":
+                    return new IDR();
+                case "2":
+                    return new USD();
+                case "3":
+                    return new EUR();
+                case "4":
+                    return new JPY();
+                case "5":
+                    return new MYR();
                 default:
                     System.out.println(ANSI_RED_BACKGROUND + "Pilihan tidak valid. Silahkan coba lagi." + ANSI_RESET);
             }
@@ -284,7 +294,7 @@ public class KohiApp {
                 // Kalkulasi dan pemotongan poin dilakukan di sini
                 double nilaiPoin = member.getPoin() * 2.0;
                 poinDipakaiIDR = Math.min(nilaiPoin, totalSetelahDiskon);
-                poinDipakaiIDR = Math.ceil(poinDipakaiIDR / 2.0) * 2.0; 
+                poinDipakaiIDR = Math.ceil(poinDipakaiIDR / 2.0) * 2.0;
             }
         }
 
@@ -295,14 +305,14 @@ public class KohiApp {
             Qris qris = (Qris) metodePembayaran;
             if (!qris.cekSaldoCukup(finalTagihanIDR)) {
                 System.out.println(ANSI_RED_BACKGROUND + "Saldo QRIS tidak cukup!" + ANSI_RESET);
-                return false; 
+                return false;
             }
             qris.kurangiSaldo(finalTagihanIDR);
         } else if (metodePembayaran instanceof Emoney) {
             Emoney emoney = (Emoney) metodePembayaran;
             if (!emoney.cekSaldoCukup(finalTagihanIDR)) {
                 System.out.println(ANSI_RED_BACKGROUND + "Saldo E-Money tidak cukup!" + ANSI_RESET);
-                return false; 
+                return false;
             }
             emoney.kurangiSaldo(finalTagihanIDR);
         }
@@ -310,10 +320,10 @@ public class KohiApp {
         // Eksekusi potong/tambah poin sesungguhnya jika transaksi berhasil
         if (member != null) {
             if (poinDipakaiIDR > 0) {
-                member.gunakanPoin(poinDipakaiIDR); 
+                member.gunakanPoin(poinDipakaiIDR);
             }
-            member.tambahPoin(finalTagihanIDR); 
-            poinDidapat = member.getPoin() - (poinSebelum - (int)(poinDipakaiIDR / 2.0));
+            member.tambahPoin(finalTagihanIDR);
+            poinDidapat = member.getPoin() - (poinSebelum - (int) (poinDipakaiIDR / 2.0));
         }
 
         Kuitansi kuitansi = new Kuitansi(pesanan, metodePembayaran, mataUang, poinDipakaiIDR, poinSebelum, poinDidapat);

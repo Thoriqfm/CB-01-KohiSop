@@ -3,6 +3,7 @@ package kohisop.Membership;
 import java.util.Random;
 
 public class Member {
+
     private String kodeMember;
     private String nama;
     private int poin;
@@ -10,6 +11,13 @@ public class Member {
     public Member(String nama) {
         this.nama = nama;
         this.kodeMember = generateKode(); // Generate otomatis saat objek dibuat
+        this.poin = 0;
+    }
+
+    // Constructor untuk testing dengan kode tetap
+    public Member(String nama, String kodeMember) {
+        this.nama = nama;
+        this.kodeMember = kodeMember;
         this.poin = 0;
     }
 
@@ -50,7 +58,7 @@ public class Member {
     public void tambahPoin(double totalBelanjaIDR) {
         int tambahan = (int) (totalBelanjaIDR / 10);
         if (isPoinGanda()) {
-            tambahan *= 2; 
+            tambahan *= 2;
         }
         this.poin += tambahan;
     }

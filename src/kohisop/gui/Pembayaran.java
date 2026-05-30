@@ -425,12 +425,12 @@ public class Pembayaran extends javax.swing.JFrame {
 
         // Validasi saldo untuk QRIS dan E-Money
         if ((checkBoxQRIS.isSelected() || checkBoxEMoney.isSelected()) && saldoAwal < totalBelanja) {
-            JOptionPane.showMessageDialog(this, 
-                "Saldo tidak cukup!\n\n" +
-                "Total Belanja: Rp" + String.format("%.0f", totalBelanja) + "\n" +
-                "Saldo Anda: Rp" + String.format("%.0f", saldoAwal) + "\n" +
-                "Kurang: Rp" + String.format("%.0f", totalBelanja - saldoAwal),
-                "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Saldo tidak cukup!\n\n"
+                    + "Total Belanja: Rp" + String.format("%.0f", totalBelanja) + "\n"
+                    + "Saldo Anda: Rp" + String.format("%.0f", saldoAwal) + "\n"
+                    + "Kurang: Rp" + String.format("%.0f", totalBelanja - saldoAwal),
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -470,30 +470,30 @@ public class Pembayaran extends javax.swing.JFrame {
         double saldoAkhir = (checkBoxTunai.isSelected()) ? saldoAwal - totalBelanja : saldoAwal - totalSetelahDiskon;
 
         // Show success message with detailed balance information
-        String pesan = "Pembayaran berhasil diproses!\n\n" +
-                "═══════════════════════════════════\n" +
-                "DETAIL TRANSAKSI\n" +
-                "═══════════════════════════════════\n" +
-                "Total Belanja: Rp" + String.format("%.0f", totalBelanja) + "\n";
+        String pesan = "Pembayaran berhasil diproses!\n\n"
+                + "═══════════════════════════════════\n"
+                + "DETAIL TRANSAKSI\n"
+                + "═══════════════════════════════════\n"
+                + "Total Belanja: Rp" + String.format("%.0f", totalBelanja) + "\n";
 
         if (!checkBoxTunai.isSelected()) {
             pesan += "Diskon: Rp" + String.format("%.0f", totalBelanja - totalSetelahDiskon) + "\n";
         }
 
-        pesan += "Total Bayar: Rp" + String.format("%.0f", totalSetelahDiskon) + "\n" +
-                "───────────────────────────────────\n" +
-                "SALDO\n" +
-                "───────────────────────────────────\n" +
-                "Saldo Awal: Rp" + String.format("%.0f", saldoAwal) + "\n" +
-                "Saldo Akhir: Rp" + String.format("%.0f", Math.max(0, saldoAkhir)) + "\n" +
-                "Pengurangan: Rp" + String.format("%.0f", totalSetelahDiskon) + "\n";
+        pesan += "Total Bayar: Rp" + String.format("%.0f", totalSetelahDiskon) + "\n"
+                + "───────────────────────────────────\n"
+                + "SALDO\n"
+                + "───────────────────────────────────\n"
+                + "Saldo Awal: Rp" + String.format("%.0f", saldoAwal) + "\n"
+                + "Saldo Akhir: Rp" + String.format("%.0f", Math.max(0, saldoAkhir)) + "\n"
+                + "Pengurangan: Rp" + String.format("%.0f", totalSetelahDiskon) + "\n";
 
         if (currentMember != null) {
-            pesan += "───────────────────────────────────\n" +
-                    "POIN\n" +
-                    "───────────────────────────────────\n" +
-                    "Poin Didapat: " + poinDidapat + "\n" +
-                    "Total Poin: " + currentMember.getPoin() + "\n";
+            pesan += "───────────────────────────────────\n"
+                    + "POIN\n"
+                    + "───────────────────────────────────\n"
+                    + "Poin Didapat: " + poinDidapat + "\n"
+                    + "Total Poin: " + currentMember.getPoin() + "\n";
         }
 
         pesan += "═══════════════════════════════════";

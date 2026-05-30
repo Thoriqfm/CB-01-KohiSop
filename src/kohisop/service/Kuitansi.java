@@ -24,74 +24,81 @@ public class Kuitansi {
         this.poinDidapat = poinDidapat;
     }
 
-    public void cetak() {
-        System.out.println("=============================================");
-        System.out.println("               KOHI SOP CAFE                 ");
-        System.out.println("=============================================");
+    public String generate() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=============================================\n");
+        sb.append("               KOHI SOP CAFE                 \n");
+        sb.append("=============================================\n");
 
         boolean bebas = pesanan.isBebasPajak();
         String currentKategori = "";
-        
+
         for (ItemPesanan item : pesanan.getSortedItems()) {
             String kategoriItem = item.getMenuItem().getKategori();
 
             if (!kategoriItem.equalsIgnoreCase(currentKategori)) {
-                System.out.println("--- " + kategoriItem.toUpperCase() + " ---");
+                sb.append("--- ").append(kategoriItem.toUpperCase()).append(" ---\n");
                 currentKategori = kategoriItem;
             }
 
             double subtotalIDR = item.getSubTotal();
             double subtotalKonversi = mataUang.konversiDariIDR(subtotalIDR);
 
-            System.out.printf("%-22s%n", item.getMenuItem().getNama());
-            System.out.printf(" %-18s x%-3d %s%n", 
-                    mataUang.format(mataUang.konversiDariIDR(item.getMenuItem().getHarga())), 
-                    item.getKuantitas(), 
-                    mataUang.format(subtotalKonversi));
+            sb.append(String.format("%-22s%n", item.getMenuItem().getNama()));
+            sb.append(String.format(" %-18s x%-3d %s%n",
+                    mataUang.format(mataUang.konversiDariIDR(item.getMenuItem().getHarga())),
+                    item.getKuantitas(),
+                    mataUang.format(subtotalKonversi)));
 
             double pajak = item.getTotalPajak(bebas);
             if (pajak > 0) {
-                System.out.printf(" Pajak (%.0f%%) %s%n", (pajak / subtotalIDR * 100), mataUang.format(mataUang.konversiDariIDR(pajak)));
+                sb.append(String.format(" Pajak (%.0f%%) %s%n", (pajak / subtotalIDR * 100), mataUang.format(mataUang.konversiDariIDR(pajak))));
             }
         }
-        
-        System.out.println("---------------------------------------------");
-        
+
+        sb.append("---------------------------------------------\n");
+
         double totalTanpaPajak = pesanan.getTotalTanpaPajak();
         double totalDenganPajak = pesanan.getTotalDenganPajak();
         double diskon = totalDenganPajak * metodePembayaran.getDiskon();
         double biayaAdmin = metodePembayaran.getBiayaAdmin();
         double totalSetelahChannel = metodePembayaran.hitungTotalSetelahDiskon(totalDenganPajak);
 
-        System.out.printf("%-25s %s%n", "Subtotal:", mataUang.format(mataUang.konversiDariIDR(totalTanpaPajak)));
-        System.out.printf("%-25s %s%n", "Pajak:", mataUang.format(mataUang.konversiDariIDR(totalDenganPajak - totalTanpaPajak)));
+        sb.append(String.format("%-25s %s%n", "Subtotal:", mataUang.format(mataUang.konversiDariIDR(totalTanpaPajak))));
+        sb.append(String.format("%-25s %s%n", "Pajak:", mataUang.format(mataUang.konversiDariIDR(totalDenganPajak - totalTanpaPajak))));
 
         if (diskon > 0) {
-            System.out.printf("%-25s -%s%n", "Diskon (" + metodePembayaran.getNama() + "):", mataUang.format(mataUang.konversiDariIDR(diskon)));
+            sb.append(String.format("%-25s -%s%n", "Diskon (" + metodePembayaran.getNama() + "):", mataUang.format(mataUang.konversiDariIDR(diskon))));
         }
         if (biayaAdmin > 0) {
-            System.out.printf("%-25s %s%n", "Biaya Admin (" + metodePembayaran.getNama() + "):", mataUang.format(mataUang.konversiDariIDR(biayaAdmin)));
+            sb.append(String.format("%-25s %s%n", "Biaya Admin (" + metodePembayaran.getNama() + "):", mataUang.format(mataUang.konversiDariIDR(biayaAdmin))));
         }
         if (poinDipakaiIDR > 0) {
-            System.out.printf("%-25s -%s%n", "Diskon Poin:", mataUang.format(poinDipakaiIDR));
+            sb.append(String.format("%-25s -%s%n", "Diskon Poin:", mataUang.format(poinDipakaiIDR)));
         }
 
         double grandTotal = mataUang.konversiDariIDR(totalSetelahChannel - poinDipakaiIDR);
-        System.out.println("=============================================");
-        System.out.printf("%-25s %s%n", "GRAND TOTAL (" + mataUang.getKode() + "):", mataUang.format(grandTotal));
-        System.out.println("=============================================");
-        System.out.printf("%-25s %s%n", "Metode Pembayaran:", metodePembayaran.getNama());
-        System.out.println("=============================================");
-        
+        sb.append("=============================================\n");
+        sb.append(String.format("%-25s %s%n", "GRAND TOTAL (" + mataUang.getKode() + "):", mataUang.format(grandTotal)));
+        sb.append("=============================================\n");
+        sb.append(String.format("%-25s %s%n", "Metode Pembayaran:", metodePembayaran.getNama()));
+        sb.append("=============================================\n");
+
         Member m = pesanan.getMember();
         if (m != null) {
-            System.out.println("Member: " + m.getNama() + " (" + m.getKodeMember() + ")");
-            System.out.println("Poin Awal       : " + poinSebelum);
-            System.out.println("Poin Terpakai   : " + (int)(poinDipakaiIDR / 2.0));
-            System.out.println("Poin Didapat    : " + poinDidapat);
-            System.out.println("Total Poin Kini : " + m.getPoin());
-            System.out.println("=============================================");
+            sb.append("Member: ").append(m.getNama()).append(" (").append(m.getKodeMember()).append(")\n");
+            sb.append("Poin Awal       : ").append(poinSebelum).append("\n");
+            sb.append("Poin Terpakai   : ").append((int) (poinDipakaiIDR / 2.0)).append("\n");
+            sb.append("Poin Didapat    : ").append(poinDidapat).append("\n");
+            sb.append("Total Poin Kini : ").append(m.getPoin()).append("\n");
+            sb.append("=============================================\n");
         }
-        System.out.printf("%s%s%n", " ".repeat(10), "Terima kasih sudah berkunjung!");
+        sb.append(String.format("%s%s%n", " ".repeat(10), "Terima kasih sudah berkunjung!"));
+
+        return sb.toString();
+    }
+
+    public void cetak() {
+        System.out.print(generate());
     }
 }
