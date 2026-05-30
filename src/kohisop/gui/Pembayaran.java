@@ -279,6 +279,7 @@ public class Pembayaran extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>
+    
 
     private void checkBoxTunaiActionPerformed(java.awt.event.ActionEvent evt) {
         uncheckOtherPaymentMethods(checkBoxTunai);
