@@ -10,13 +10,9 @@ if not exist bin (
 
 REM Compile semua file Java
 echo Compiling Java files...
-javac -d bin -sourcepath src ^
-    src\kohisop\Main.java ^
-    src\kohisop\app\*.java ^
-    src\kohisop\currency\*.java ^
-    src\kohisop\model\*.java ^
-    src\kohisop\payment\*.java ^
-    src\kohisop\service\*.java
+dir /s /b src\*.java > sources.txt
+javac -d bin -sourcepath src @sources.txt
+del sources.txt
 
 if %ERRORLEVEL% neq 0 (
     echo Compile failed!
