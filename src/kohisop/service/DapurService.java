@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
-import kohisop.model.ItemPesanan;
-import kohisop.model.Pesanan;
+import kohisop.model.entities.ItemPesanan;
+import kohisop.model.entities.Pesanan;
 
 public class DapurService {
     

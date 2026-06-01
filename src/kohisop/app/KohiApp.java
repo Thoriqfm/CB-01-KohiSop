@@ -2,29 +2,29 @@ package kohisop.app;
 
 import java.util.LinkedList;
 import java.util.Scanner;
-import kohisop.Membership.Member;
-import kohisop.currency.EUR;
-import kohisop.currency.IDR;
-import kohisop.currency.JPY;
-import kohisop.currency.MYR;
-import kohisop.currency.MataUang;
-import kohisop.currency.USD;
-import kohisop.model.ItemPesanan;
-import kohisop.model.Makanan;
-import kohisop.model.MenuItem;
-import kohisop.model.Minuman;
-import kohisop.model.Pesanan;
-import kohisop.payment.Emoney;
-import kohisop.payment.MetodePembayaran;
-import kohisop.payment.Qris;
-import kohisop.payment.Tunai;
+import kohisop.model.membership.Member;
+import kohisop.model.currency.EUR;
+import kohisop.model.currency.IDR;
+import kohisop.model.currency.JPY;
+import kohisop.model.currency.MYR;
+import kohisop.model.currency.MataUang;
+import kohisop.model.currency.USD;
+import kohisop.model.entities.ItemPesanan;
+import kohisop.model.entities.Makanan;
+import kohisop.model.entities.MenuItem;
+import kohisop.model.entities.Minuman;
+import kohisop.model.entities.Pesanan;
+import kohisop.model.payment.Emoney;
+import kohisop.model.payment.MetodePembayaran;
+import kohisop.model.payment.Qris;
+import kohisop.model.payment.Tunai;
 import kohisop.service.DapurService;
-import kohisop.service.Kuitansi;
-import kohisop.service.Menu;
+import kohisop.service.KuitansiService;
+import kohisop.service.MenuService;
 
 public class KohiApp {
 
-    private Menu menu;
+    private MenuService menu;
     private Pesanan pesanan;
     private LinkedList<Member> databaseMember; // Tambahan untuk menyimpan data member
     private Scanner scanner = new Scanner(System.in);
@@ -34,7 +34,7 @@ public class KohiApp {
     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
 
     public KohiApp() {
-        this.menu = new Menu();
+        this.menu = new MenuService();
         this.pesanan = new Pesanan();
         this.databaseMember = new LinkedList<>();
 
@@ -326,7 +326,7 @@ public class KohiApp {
             poinDidapat = member.getPoin() - (poinSebelum - (int) (poinDipakaiIDR / 2.0));
         }
 
-        Kuitansi kuitansi = new Kuitansi(pesanan, metodePembayaran, mataUang, poinDipakaiIDR, poinSebelum, poinDidapat);
+        KuitansiService kuitansi = new KuitansiService(pesanan, metodePembayaran, mataUang, poinDipakaiIDR, poinSebelum, poinDidapat);
         kuitansi.cetak();
         return true;
     }

@@ -1,0 +1,30 @@
+package kohisop.model.entities;
+
+public class Makanan extends MenuItem {
+
+    public static final int MAX_KUANTITAS = 2;
+
+    public Makanan(String kode, String nama, double harga) {
+        super(kode, nama, harga);
+    }
+
+    // Peran 2: Detail persentase pajak berjenjang makanan
+    @Override
+    public double hitungPajak() {
+        if (this.harga > 50) {
+            return this.harga * 0.08;
+        } else {
+            return this.harga * 0.11;
+        }
+    }
+
+    @Override
+    public String getKategori() {
+        return "Makanan";
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-3s %-35s %7s", this.kode, this.nama, "Rp" + String.format("%.0f", this.harga));
+    }
+}
