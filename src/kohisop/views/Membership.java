@@ -42,9 +42,9 @@ public class Membership extends javax.swing.JFrame {
 
     // Initialize database member untuk testing
     private void initDatabaseMember() {
-        databaseMember.add(new Member("John Doe", "A12345"));
-        databaseMember.add(new Member("Jane Smith", "B54321"));
-        databaseMember.add(new Member("Alex Brown", "ABCDEF"));
+        databaseMember.add(new Member("A12345", "John Doe"));
+        databaseMember.add(new Member("B54321", "Jane Smith"));
+        databaseMember.add(new Member("ABCDEF", "Alex Brown"));
     }
 
     /**
