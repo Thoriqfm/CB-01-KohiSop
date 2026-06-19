@@ -60,6 +60,11 @@ public class Pesanan {
 
     public ArrayList<ItemPesanan> getAllItem() { return daftarItem; }
 
+    /**
+     * Mengembalikan daftar item pesanan yang sudah diurutkan terlebih dahulu.
+     * Item makanan akan diletakkan di atas item minuman, dan di dalamnya akan diurutkan berdasarkan harga.
+     * @return daftar item pesanan yang sudah diurutkan
+     */
     public ArrayList<ItemPesanan> getSortedItems() {
         ArrayList<ItemPesanan> sorted = new ArrayList<>(daftarItem);
         sorted.sort((a, b) -> {

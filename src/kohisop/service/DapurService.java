@@ -12,6 +12,11 @@ public class DapurService {
     private PriorityQueue<ItemPesanan> antreanMakanan;
     private Stack<ItemPesanan> antreanMinuman;
 
+    /**
+     * Membuat instance dari DapurService.
+     * Menginisialisasi antrean makanan sebagai PriorityQueue yang diurutkan berdasarkan harga menu (termahal terlebih dahulu)
+     * Menginisialisasi antrean minuman sebagai Stack yang diurutkan berdasarkan urutan pesanan (Last-In-First-Out)
+     */
     public DapurService() {
         Comparator<ItemPesanan> pembandingHarga = (a, b) -> {
             int compareHarga = Double.compare(b.getMenuItem().getHarga(), a.getMenuItem().getHarga());
